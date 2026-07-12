@@ -720,5 +720,4 @@ const INDEX_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-
 export default INDEX_HTML
