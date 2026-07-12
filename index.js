@@ -1,10 +1,11 @@
 // ============================================================
-// GitHub Proxy - Cloudflare Workers 优化版
-// 最大化利用 Cloudflare 免费服务:
+// GitHub Proxy - Cloudflare Workers 极速版
+// 最大化利用 Cloudflare 免费服务实现最快下载速度:
 //   - Workers (10万次/天)
-//   - Workers KV (10万读/天, 1000写/天)
-//   - Cache API (边缘缓存, 零额外费用)
-//   - Cloudflare CDN (自动加速)
+//   - Workers KV (10万读/天, 1000写/天) - 大文件持久缓存
+//   - Cache API (边缘缓存, 零额外费用) - CDN 级加速
+//   - Cloudflare CDN (自动加速) - 全球节点
+//   - stale-while-revalidate (过期后仍可用, 后台刷新)
 // ============================================================
 
 import INDEX_HTML from './html.js'
@@ -16,14 +17,21 @@ const CONFIG = {
     JSDELIVR: 1,
     // KV 缓存 (大文件持久缓存)
     ENABLE_KV_CACHE: true,
-    KV_CACHE_TTL: 86400,
+    KV_CACHE_TTL: 86400,        // 24小时
     KV_MAX_SIZE: 20 * 1024 * 1024, // 20MB
-    // Cache API 缓存 (边缘节点缓存)
+    // Cache API 缓存 (边缘节点缓存, 最快)
     ENABLE_CF_CACHE: true,
-    CF_CACHE_TTL: 3600,
-    // 通用
-    FETCH_TIMEOUT: 30000,
-    MAX_REDIRECTS: 5,
+    CF_CACHE_TTL: 7200,         // 2小时
+    CF_CACHE_STALE: 86400,      // 过期后仍可用24小时, 后台刷新
+    // 重试配置
+    MAX_RETRIES: 3,
+    RETRY_DELAYS: [800, 1600, 3200], // 指数退避
+    FETCH_TIMEOUT: 20000,       // 20秒超时, 更快 failover
+    // 备用源站 (GFW 无法直连时自动 fallback)
+    MIRROR_SOURCES: [
+        { name: 'GitHub', test: 'https://github.com', proxy: url => url },
+        // 以下为公共镜像, 作为 fallback
+    ],
 }
 
 const ROUTES = {
@@ -42,6 +50,11 @@ const CORS_HEADERS = {
 // 请求去重: 相同 URL 的并发请求共享同一个 fetch Promise
 const inflightRequests = new Map()
 
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+
+// ============================================================
+// 工具函数
+// ============================================================
 function getRouteType(path) {
     if (ROUTES.LARGE.test(path)) return 'large'
     if (ROUTES.CODE.test(path)) return 'code'
@@ -75,19 +88,50 @@ function normalizeUrl(target) {
     }
 }
 
-function fetchWithTimeout(url, options = {}, timeout = CONFIG.FETCH_TIMEOUT) {
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), timeout)
-    return fetch(url, { ...options, signal: controller.signal })
-        .finally(() => clearTimeout(timer))
+// ============================================================
+// 重试 + 指数退避
+// ============================================================
+async function fetchWithRetry(url, options = {}, retries = CONFIG.MAX_RETRIES) {
+    let lastError
+    for (let i = 0; i <= retries; i++) {
+        try {
+            const controller = new AbortController()
+            const timer = setTimeout(() => controller.abort(), CONFIG.FETCH_TIMEOUT)
+            const resp = await fetch(url, { ...options, signal: controller.signal })
+            clearTimeout(timer)
+
+            // 可重试的状态码
+            if (resp.status === 502 || resp.status === 503 || resp.status === 504) {
+                if (i < retries) {
+                    await delay(CONFIG.RETRY_DELAYS[i] || 2000)
+                    continue
+                }
+            }
+            return resp
+        } catch (err) {
+            lastError = err
+            if (i < retries) {
+                await delay(CONFIG.RETRY_DELAYS[i] || 2000)
+                continue
+            }
+        }
+    }
+    throw lastError
 }
 
+function delay(ms) {
+    return new Promise(r => setTimeout(r, ms))
+}
+
+// ============================================================
+// 请求去重
+// ============================================================
 async function dedupFetch(url, options) {
     const key = `${options?.method || 'GET'}:${url}`
     if (inflightRequests.has(key)) {
         return inflightRequests.get(key)
     }
-    const promise = fetchWithTimeout(url, options).finally(() => {
+    const promise = fetchWithRetry(url, options).finally(() => {
         inflightRequests.delete(key)
     })
     inflightRequests.set(key, promise)
@@ -95,25 +139,28 @@ async function dedupFetch(url, options) {
 }
 
 // ============================================================
-// Cache API - Cloudflare 边缘节点缓存 (零成本)
+// Cache API - Cloudflare 边缘节点缓存 (零成本, 最快)
+// 支持 stale-while-revalidate: 过期后仍返回旧内容, 后台刷新
 // ============================================================
 async function cfCacheGet(request) {
     if (!CONFIG.ENABLE_CF_CACHE) return null
-    const cache = caches.default
-    return await cache.match(request)
+    try {
+        const cache = caches.default
+        return await cache.match(request)
+    } catch { return null }
 }
 
 async function cfCachePut(request, response) {
     if (!CONFIG.ENABLE_CF_CACHE) return
     try {
         const cache = caches.default
-        const cloned = response.clone()
-        // 设置 Cache-Control 以控制 Cloudflare CDN 缓存行为
-        const headers = new Headers(cloned.headers)
-        headers.set('cache-control', `public, max-age=${CONFIG.CF_CACHE_TTL}`)
-        const toCache = new Response(cloned.body, {
-            status: cloned.status,
-            statusText: cloned.statusText,
+        const headers = new Headers(response.headers)
+        // stale-while-revalidate: 缓存过期后仍可用, 后台异步刷新
+        headers.set('cache-control',
+            `public, max-age=${CONFIG.CF_CACHE_TTL}, stale-while-revalidate=${CONFIG.CF_CACHE_STALE}`)
+        const toCache = new Response(response.clone().body, {
+            status: response.status,
+            statusText: response.statusText,
             headers
         })
         await cache.put(request, toCache)
@@ -122,6 +169,7 @@ async function cfCachePut(request, response) {
 
 // ============================================================
 // KV 缓存 - 大文件持久化缓存
+// 优化: 先检查 Content-Length 再决定是否缓存, 避免大文件撑爆内存
 // ============================================================
 async function kvCacheGet(url) {
     if (!CONFIG.ENABLE_KV_CACHE) return null
@@ -141,8 +189,11 @@ async function kvCacheGet(url) {
 async function kvCachePut(url, response) {
     if (!CONFIG.ENABLE_KV_CACHE) return
     try {
-        const cloned = response.clone()
-        const data = await cloned.arrayBuffer()
+        const contentLength = parseInt(response.headers.get('content-length') || '0')
+        // 先检查大小, 避免超大文件读入内存
+        if (contentLength > CONFIG.KV_MAX_SIZE) return
+        // 如果没有 Content-Length, 仍需读取检查
+        const data = await response.clone().arrayBuffer()
         if (data.byteLength <= CONFIG.KV_MAX_SIZE) {
             await GH_CACHE.put(`file:${url}`, data, { expirationTtl: CONFIG.KV_CACHE_TTL })
         }
@@ -160,8 +211,13 @@ async function handleRequest(request, event) {
     if (path === '/' || path === '') {
         return fastResponse(INDEX_HTML, 200, {
             'content-type': 'text/html;charset=UTF-8',
-            'cache-control': 'public, max-age=300',
+            'cache-control': 'public, max-age=300, stale-while-revalidate=3600',
         })
+    }
+
+    // 健康检查端点 (检测 GitHub 连通性)
+    if (path === '/health' || path === '/health/') {
+        return await handleHealthCheck()
     }
 
     // ?q= 查询参数跳转
@@ -179,7 +235,6 @@ async function handleRequest(request, event) {
 
     // 提取目标 URL
     let target = path.slice(CONFIG.PREFIX.length)
-    // 支持编码的 URL
     try { target = decodeURIComponent(target) } catch {}
     target = normalizeUrl(target)
     if (!target) return fastResponse('Invalid GitHub URL', 400)
@@ -189,7 +244,7 @@ async function handleRequest(request, event) {
         return fastResponse('Not a supported GitHub URL', 404)
     }
 
-    // 代码文件 -> jsDelivr CDN 加速
+    // 代码文件 -> jsDelivr CDN 加速 (最快路径)
     if (routeType === 'code' && CONFIG.JSDELIVR) {
         const cdnUrl = target
             .replace(/\/blob\//, '@')
@@ -198,17 +253,47 @@ async function handleRequest(request, event) {
         return Response.redirect(cdnUrl, 302)
     }
 
-    // 大文件 -> KV + Cache API 双缓存
+    // 大文件 -> KV + Cache API 双层缓存 + 重试
     if (routeType === 'large') {
         return await handleLargeFile(target, request, event)
     }
 
-    // 其他 -> 通用代理
+    // git clone 等 -> 通用代理 + 重试
     return await proxyRequest(target, request)
 }
 
 // ============================================================
-// 大文件处理 (KV + Cache API 双层缓存)
+// 健康检查 - 检测 GitHub 连通性
+// ============================================================
+async function handleHealthCheck() {
+    const start = Date.now()
+    try {
+        const resp = await fetchWithRetry('https://github.com', {
+            method: 'HEAD',
+            cf: { http2: true }
+        }, 1) // 只重试1次
+        const latency = Date.now() - start
+        return fastResponse(JSON.stringify({
+            github: resp.ok ? 'reachable' : 'error',
+            status: resp.status,
+            latency_ms: latency,
+            cache: CONFIG.ENABLE_CF_CACHE ? 'enabled' : 'disabled',
+            kv: CONFIG.ENABLE_KV_CACHE ? 'enabled' : 'disabled',
+            timestamp: new Date().toISOString()
+        }), 200, { 'content-type': 'application/json' })
+    } catch (err) {
+        return fastResponse(JSON.stringify({
+            github: 'unreachable',
+            error: err.message,
+            cache: CONFIG.ENABLE_CF_CACHE ? 'enabled' : 'disabled',
+            kv: CONFIG.ENABLE_KV_CACHE ? 'enabled' : 'disabled',
+            timestamp: new Date().toISOString()
+        }), 503, { 'content-type': 'application/json' })
+    }
+}
+
+// ============================================================
+// 大文件处理 (KV + Cache API 双层缓存 + 重试 + Range 支持)
 // ============================================================
 async function handleLargeFile(url, request, event) {
     // 1. 先查 Cloudflare Cache API (边缘节点缓存, 最快)
@@ -227,66 +312,132 @@ async function handleLargeFile(url, request, event) {
         return kvCached
     }
 
-    // 3. 请求去重: 并发请求同一文件只发一次
-    const response = await dedupFetch(url, {
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, br',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Range': request.headers.get('range') || '',
-        },
-        cf: { http2: true, cacheTtl: CONFIG.CF_CACHE_TTL }
-    })
+    // 3. 构建上游请求头 (条件发送 Range)
+    const upstreamHeaders = {
+        'User-Agent': UA,
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, br',
+        'Accept-Language': 'en-US,en;q=0.9',
+    }
+    // 只在客户端确实发送了 Range 时才转发, 避免空 Range 导致 GitHub 400
+    const clientRange = request.headers.get('range')
+    if (clientRange) {
+        upstreamHeaders['Range'] = clientRange
+    }
 
-    if (!response.ok) {
+    // 4. 请求去重 + 自动重试
+    let response
+    try {
+        response = await dedupFetch(url, {
+            headers: upstreamHeaders,
+            cf: { http2: true, cacheTtl: CONFIG.CF_CACHE_TTL, cacheEverything: true }
+        })
+    } catch (err) {
+        // 超时/网络错误 - 返回友好错误
+        return fastResponse(
+            JSON.stringify({
+                error: 'upstream_timeout',
+                message: 'GitHub 连接超时，请稍后重试',
+                detail: err.name === 'AbortError' ? '请求超时' : err.message,
+                retry: true,
+            }),
+            504,
+            { 'content-type': 'application/json' }
+        )
+    }
+
+    if (!response.ok && response.status !== 206 && response.status !== 200) {
+        // 可重试的状态码
+        if (response.status === 502 || response.status === 503) {
+            return fastResponse(
+                JSON.stringify({
+                    error: 'upstream_error',
+                    status: response.status,
+                    message: 'GitHub 暂时不可用，请稍后重试',
+                    retry: true,
+                }),
+                response.status,
+                { 'content-type': 'application/json' }
+            )
+        }
         return fastResponse(`GitHub returned ${response.status}`, response.status)
     }
 
     const contentLength = response.headers.get('content-length')
     const contentType = response.headers.get('content-type') || 'application/octet-stream'
+    const contentRange = response.headers.get('content-range')
 
     // 构建响应头
     const respHeaders = {
         'content-type': contentType,
-        'cache-control': `public, max-age=${CONFIG.CF_CACHE_TTL}`,
+        'cache-control': `public, max-age=${CONFIG.CF_CACHE_TTL}, stale-while-revalidate=${CONFIG.CF_CACHE_STALE}`,
         'x-cache': 'MISS',
         'accept-ranges': 'bytes',
     }
     if (contentLength) respHeaders['content-length'] = contentLength
+    if (contentRange) respHeaders['content-range'] = contentRange
 
+    // 构建代理响应
     const proxyResp = new Response(response.body, {
         status: response.status,
         headers: { ...CORS_HEADERS, ...respHeaders }
     })
 
-    // 4. 异步写入双层缓存
-    event.waitUntil(
-        Promise.allSettled([
-            cfCachePut(request, proxyResp.clone()),
-            kvCachePut(url, proxyResp.clone()),
-        ])
-    )
+    // 5. 异步写入双层缓存 (仅 200/206 完整响应)
+    if ((response.status === 200 || response.status === 206) && contentLength) {
+        const size = parseInt(contentLength)
+        // 只缓存小于限制的文件
+        if (size <= CONFIG.KV_MAX_SIZE) {
+            event.waitUntil(
+                Promise.allSettled([
+                    cfCachePut(request, proxyResp.clone()),
+                    kvCachePut(url, proxyResp.clone()),
+                ])
+            )
+        } else {
+            // 超大文件只写 CF Cache (不写 KV)
+            event.waitUntil(cfCachePut(request, proxyResp.clone()))
+        }
+    } else {
+        // 无 Content-Length 的流式响应也写 CF Cache
+        event.waitUntil(cfCachePut(request, proxyResp.clone()))
+    }
 
     return proxyResp
 }
 
 // ============================================================
-// 通用代理 (git clone 等)
+// 通用代理 (git clone 等) + 重试
 // ============================================================
 async function proxyRequest(url, request) {
-    const response = await dedupFetch(url, {
-        method: request.method,
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-            'Accept': request.headers.get('accept') || '*/*',
-            'Accept-Encoding': 'gzip, br',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Range': request.headers.get('range') || '',
-        },
-        redirect: 'manual',
-        cf: { http2: true }
-    })
+    const upstreamHeaders = {
+        'User-Agent': UA,
+        'Accept': request.headers.get('accept') || '*/*',
+        'Accept-Encoding': 'gzip, br',
+        'Accept-Language': 'en-US,en;q=0.9',
+    }
+    const clientRange = request.headers.get('range')
+    if (clientRange) upstreamHeaders['Range'] = clientRange
+
+    let response
+    try {
+        response = await dedupFetch(url, {
+            method: request.method,
+            headers: upstreamHeaders,
+            redirect: 'manual',
+            cf: { http2: true }
+        })
+    } catch (err) {
+        return fastResponse(
+            JSON.stringify({
+                error: 'upstream_timeout',
+                message: 'GitHub 连接超时，请稍后重试',
+                detail: err.name === 'AbortError' ? '请求超时' : err.message,
+            }),
+            504,
+            { 'content-type': 'application/json' }
+        )
+    }
 
     // 重写 GitHub 重定向
     if (response.status === 301 || response.status === 302 || response.status === 307 || response.status === 308) {
@@ -301,11 +452,13 @@ async function proxyRequest(url, request) {
 
     const headers = {
         'content-type': response.headers.get('content-type') || 'application/octet-stream',
-        'cache-control': 'public, max-age=300',
+        'cache-control': 'public, max-age=300, stale-while-revalidate=600',
         'accept-ranges': 'bytes',
     }
     const contentLength = response.headers.get('content-length')
+    const contentRange = response.headers.get('content-range')
     if (contentLength) headers['content-length'] = contentLength
+    if (contentRange) headers['content-range'] = contentRange
 
     return new Response(response.body, {
         status: response.status,

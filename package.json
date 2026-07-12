@@ -3,7 +3,6 @@
   "version": "2.0.0",
   "description": "GitHub Release、Archive 及项目文件的加速项目，基于 Cloudflare Workers",
   "private": true,
-  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
