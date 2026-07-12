@@ -398,12 +398,12 @@ const INDEX_HTML = `<!DOCTYPE html>
         @media (max-width: 640px) {
             .navbar { padding: 0 16px; }
             .nav-links { display: none; }
-            .container { padding: 32px 16px 48px; }
+            .container { padding: 24px 16px 32px; }
             .hero h1 { font-size: 28px; }
             .hero p { font-size: 14px; }
-            .card { padding: 20px; }
+            .card { padding: 16px; }
             .input-wrapper { flex-direction: column; }
-            .btn { width: 100%; height: 36px; }
+            .btn { width: 100%; max-width: 260px; margin: 0 auto 8px; height: 44px; font-size: 14px; }
             .actions { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
