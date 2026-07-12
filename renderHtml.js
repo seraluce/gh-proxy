@@ -123,10 +123,9 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
         .nav-links a:hover { color: var(--fg); background: var(--accent-light); }
         .nav-links a svg { width: 14px; height: 14px; }
         .nav-actions {
-            display: flex; align-items: center; gap: 8px;
+            display: flex; align-items: center; gap: 6px;
             flex-shrink: 0;
         }
-        .nav-actions .icon-btn:last-child { margin-left: 4px; }
         #menuToggle {
             display: none;
         }
@@ -135,15 +134,22 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
         }
         .icon-btn {
             background: transparent; border: 1px solid var(--border); border-radius: 6px;
-            padding: 7px 8px; cursor: pointer; color: var(--fg-secondary);
+            padding: 5px 6px; cursor: pointer; color: var(--fg-secondary);
             transition: all var(--transition); display: flex; align-items: center; justify-content: center;
         }
         .icon-btn:hover { background: var(--bg-tertiary); color: var(--fg); border-color: var(--border-hover); }
         .icon-btn svg { width: 16px; height: 16px; }
 
         @media (max-width: 640px) {
+            .navbar { padding: 0; }
+            .nav-container { padding: 0 12px; }
             .nav-links { display: none; margin-left: 0; }
             #menuToggle { display: flex; }
+            .nav-actions { gap: 4px; }
+            .icon-btn {
+                padding: 6px 6px;
+            }
+            .icon-btn svg { width: 14px; height: 14px; }
             .nav-links.mobile-open {
                 display: flex;
                 flex-direction: column;
@@ -184,7 +190,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             .nav-links.mobile-open .nav-divider {
                 height: 1px;
                 background: var(--border);
-                margin: 6px 12px;
+                margin: 4px 12px;
             }
             .navbar { z-index: 1001; }
         }
@@ -597,13 +603,6 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             <span>GH Proxy</span>
         </a>
         <div class="nav-actions">
-            <button class="icon-btn" id="menuToggle" aria-label="切换菜单" title="菜单">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
             <button class="icon-btn" id="themeToggle" aria-label="切换主题" title="切换深色/浅色模式">
                 <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
@@ -614,6 +613,13 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
                 </svg>
                 <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+            <button class="icon-btn" id="menuToggle" aria-label="切换菜单" title="菜单">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
             </button>
         </div>
