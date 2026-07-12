@@ -110,8 +110,10 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
         }
         .nav-brand svg { width: 20px; height: 20px; }
         .nav-links {
-            display: flex; align-items: center; gap: 8px; list-style: none; font-size: 13px;
-            margin-left: auto;
+            display: flex; align-items: center; gap: 8px; list-style: none; font-size: 13px; margin-left: auto;
+        }
+        @media (max-width: 640px) {
+            .nav-links { display: none; }
         }
         .nav-links a {
             color: var(--fg-secondary); text-decoration: none; padding: 6px 12px;
@@ -127,6 +129,9 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
         .nav-actions .icon-btn:last-child { margin-left: 4px; }
         #menuToggle {
             display: none;
+        }
+        @media (max-width: 640px) {
+            #menuToggle { display: flex; }
         }
         .icon-btn {
             background: transparent; border: 1px solid var(--border); border-radius: 6px;
