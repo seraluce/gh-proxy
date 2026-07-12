@@ -695,7 +695,21 @@ const INDEX_HTML = `<!DOCTYPE html>
                 </div>
             </div>
         </div>
-
+<script src="https://giscus.app/client.js"
+        data-repo="seraluce/gh-proxy"
+        data-repo-id="R_kgDOTV_VtQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOTV_Vtc4DBCSb"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
 <div class="divider">GitHub 连通性</div>
         <div class="health-section" id="healthSection">
             <span class="health-dot checking" id="healthDot" title="GitHub 连接状态：绿色=正常，黄色=检测中，红色=异常"></span>
@@ -732,21 +746,6 @@ const INDEX_HTML = `<!DOCTYPE html>
         <p>释放以粘贴链接</p>
     </div>
 </div>
-<script src="https://giscus.app/client.js"
-        data-repo="seraluce/gh-proxy"
-        data-repo-id="R_kgDOTV_VtQ"
-        data-category="Announcements"
-        data-category-id="DIC_kwDOTV_Vtc4DBCSb"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
-</script>
 <!-- Toast 容器 -->
 <div class="toast-container" id="toastContainer"></div>
 
