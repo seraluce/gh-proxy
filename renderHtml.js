@@ -1,4 +1,4 @@
-const INDEX_HTML = `<!DOCTYPE html>
+const TEMPLATE_HTML = `<!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -100,7 +100,7 @@ const INDEX_HTML = `<!DOCTYPE html>
             .nav-container { padding: 0 24px; }
         }
         @media (max-width: 640px) {
-            .nav-container { padding: 0 12px; }
+            .nav-container { padding: 0; }
         }
 .nav-brand { flex:1;
     display: flex; align-items: center; gap: 10px;
@@ -227,13 +227,13 @@ const INDEX_HTML = `<!DOCTYPE html>
         }
         .hero p { color: var(--fg-secondary); font-size: 15px; max-width: 480px; margin: 0 auto; }
 
-        .card {
-            background: var(--bg-secondary); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); padding: 28px;
-            box-shadow: var(--shadow);
-            transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
-            max-width: 800px; margin: 0 auto;
-        }
+.card {
+        background: var(--bg-secondary); border: 1px solid var(--border);
+        border-radius: var(--radius-lg); padding: 28px;
+        box-shadow: var(--shadow);
+        transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+        margin: 0 auto;
+}
         .card:focus-within { box-shadow: var(--shadow-lg); border-color: var(--border-hover); }
 
         /* ===== 输入区域 ===== */
@@ -695,6 +695,7 @@ const INDEX_HTML = `<!DOCTYPE html>
                 </div>
             </div>
         </div>
+<div style="max-height: 400px; overflow-y: auto; margin: 16px 0;">
 <script src="https://giscus.app/client.js"
         data-repo="seraluce/gh-proxy"
         data-repo-id="R_kgDOTV_VtQ"
@@ -710,6 +711,7 @@ const INDEX_HTML = `<!DOCTYPE html>
         crossorigin="anonymous"
         async>
 </script>
+</div>
 <div class="divider">GitHub 连通性</div>
         <div class="health-section" id="healthSection">
             <span class="health-dot checking" id="healthDot" title="GitHub 连接状态：绿色=正常，黄色=检测中，红色=异常"></span>
@@ -865,11 +867,11 @@ const INDEX_HTML = `<!DOCTYPE html>
         }
         const proxy = buildProxyUrl(raw);
         hintsEl.innerHTML =
-            '<strong>加速链接</strong><br><code>' + escHtml(proxy) + '</code>';
+            '<strong>加速链接</strong><br><code>' + escapeHtml(proxy) + '</code>';
         hintsEl.classList.add('show');
     }
 
-    function escHtml(s) {
+    function escapeHtml(s) {
         return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
@@ -1036,4 +1038,4 @@ const INDEX_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export default INDEX_HTML
+export default TEMPLATE_HTML

@@ -8,9 +8,9 @@
 //   - stale-while-revalidate (过期后仍可用, 后台刷新)
 // ============================================================
 
-import INDEX_HTML from './html.js'
+import TEMPLATE_HTML from './renderHtml.js';
 
-'use strict'
+'use strict';
 
 const CONFIG = {
     PREFIX: '/',
@@ -209,7 +209,7 @@ async function handleRequest(request, event, env) {
 
     // 首页
     if (path === '/' || path === '') {
-        return fastResponse(INDEX_HTML, 200, {
+        return fastResponse(TEMPLATE_HTML, 200, {
             'content-type': 'text/html;charset=UTF-8',
             'cache-control': 'public, max-age=300, stale-while-revalidate=3600',
         })
