@@ -1,22 +1,31 @@
+// ============================================================
+// GitHub Proxy - Cloudflare Workers 优化版
+// 功能：加速 GitHub 文件下载
+// ============================================================
+
 'use strict'
 
-// ============ 极简配置 ============
+// ==================== 配置 ====================
 const CONFIG = {
     PREFIX: '/',
-    JSDELIVR: 1,              // 开启 jsDelivr 加速
-    ENABLE_KV_CACHE: true,    // 开启 KV 缓存
-    CACHE_TTL: 3600,          // 缓存1小时
-    ENABLE_GZIP: true,        // 启用压缩
+    JSDELIVR: 1,
+    ENABLE_KV_CACHE: true,
+    CACHE_TTL: 7200,
+    MAX_CACHE_SIZE: 8 * 1024 * 1024
 }
 
-// ============ 精简路由（合并正则） ============
+// ==================== 路由规则 ====================
 const ROUTES = {
-    // 大文件：Release/Archive
     LARGE: /^(?:https?:\/\/)?(?:github\.com\/.+?\/.+?\/(?:releases|archive)\/|gist\.github\.com\/.+?\/.+?\/.+)/i,
-    // 代码文件：Blob/Raw
     CODE: /^(?:https?:\/\/)?(?:github\.com\/.+?\/.+?\/(?:blob|raw)\/|raw\.(?:githubusercontent|github)\.com\/.+?\/.+?\/.+?\/.+)/i,
-    // 其他
-    OTHER: /^(?:https?:\/\/)?(?:github\.com\/.+?\/.+?\/(?:info|git-|tags).*)/i,
+    OTHER: /^(?:https?:\/\/)?(?:github\.com\/.+?\/.+?\/(?:info|git-|tags).*)/i
+}
+
+const CORS_HEADERS = {
+    'access-control-allow-origin': '*',
+    'access-control-expose-headers': '*',
+    'access-control-allow-methods': 'GET,HEAD,OPTIONS',
+    'access-control-max-age': '86400'
 }
 
 function getRouteType(path) {
@@ -26,15 +35,6 @@ function getRouteType(path) {
     return null
 }
 
-// ============ 极速响应工具 ============
-const CORS_HEADERS = {
-    'access-control-allow-origin': '*',
-    'access-control-expose-headers': '*',
-    'access-control-allow-methods': 'GET,HEAD,OPTIONS',
-    'access-control-max-age': '86400',
-}
-
-// 快速创建响应（减少对象创建开销）
 function fastResponse(body, status = 200, headers = {}) {
     return new Response(body, {
         status,
@@ -42,125 +42,186 @@ function fastResponse(body, status = 200, headers = {}) {
     })
 }
 
-// ============ 主处理函数 ============
+function isGitHubUrl(url) {
+    return /github\.com|githubusercontent\.com/i.test(url)
+}
+
+// ==================== 引入 HTML（从外部文件） ====================
+// 部署时，HTML 会通过 wrangler 的 vars 或 assets 注入
+// 这里使用环境变量读取，或直接使用内联版本
+const INDEX_HTML = typeof INDEX_HTML_STR !== 'undefined' 
+    ? INDEX_HTML_STR 
+    : `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 代理加速</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:20px}
+        .container{background:#fff;padding:40px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:600px;width:100%}
+        h1{color:#333;margin-bottom:8px;font-size:28px}
+        .subtitle{color:#666;margin-bottom:30px;font-size:14px}
+        .input-group{display:flex;gap:10px;margin-bottom:20px}
+        input{flex:1;padding:12px 16px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;transition:border-color .3s}
+        input:focus{outline:none;border-color:#667eea}
+        button{padding:12px 24px;background:#667eea;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .1s,background .3s}
+        button:hover{background:#5a67d8}
+        button:active{transform:scale(.95)}
+        .examples{background:#f7f7f7;border-radius:8px;padding:16px;margin-top:20px}
+        .examples p{color:#555;font-size:13px;margin-bottom:8px}
+        .examples code{display:block;background:#e8e8e8;padding:6px 10px;border-radius:4px;margin:4px 0;font-size:12px;word-break:break-all;cursor:pointer}
+        .examples code:hover{background:#ddd}
+        .footer{margin-top:24px;text-align:center;color:#999;font-size:12px}
+        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none}
+        .toast.show{opacity:1}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 GitHub 代理加速</h1>
+        <p class="subtitle">输入 GitHub 链接，快速下载文件</p>
+        <div class="input-group">
+            <input id="input" placeholder="https://github.com/user/repo/releases/download/v1.0/file.zip" />
+            <button id="btn">🚀 加速</button>
+        </div>
+        <div class="examples">
+            <p>📌 支持以下类型：</p>
+            <code>https://github.com/user/repo/releases/download/v1.0/file.zip</code>
+            <code>https://github.com/user/repo/blob/main/file.js</code>
+            <code>https://raw.githubusercontent.com/user/repo/main/file.txt</code>
+        </div>
+        <div class="footer">⚡ Cloudflare Workers 加速 · 开源免费</div>
+    </div>
+    <div id="toast" class="toast">✅ 已复制</div>
+    <script>
+        const input=document.getElementById('input'),btn=document.getElementById('btn'),toast=document.getElementById('toast');
+        function buildUrl(original){
+            const prefix=window.location.pathname.replace(/\\/+$/,'')||'';
+            return window.location.origin+prefix+'/'+original;
+        }
+        btn.addEventListener('click',()=>{
+            let url=input.value.trim();
+            if(!url)return;
+            if(!/^https?:\\/\\//i.test(url))url='https://'+url;
+            window.open(buildUrl(url),'_blank');
+        });
+        input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click()});
+        document.querySelectorAll('.examples code').forEach(el=>{
+            el.addEventListener('click',()=>{
+                input.value=el.textContent.trim();
+                btn.click();
+            });
+        });
+        input.focus();
+    </script>
+</body>
+</html>`
+
+// ==================== 主处理函数 ====================
 async function handleRequest(request) {
     const url = new URL(request.url)
     let path = url.pathname + url.search
-    
-    // 1. 处理根路径（极简首页）
+
     if (path === '/' || path === '') {
-        return fastResponse(
-            `<!DOCTYPE html><html><head><title>GH Proxy</title><meta charset="UTF-8"></head>
-            <body><h1>🚀 GitHub Proxy</h1><p>Usage: ${url.origin}${CONFIG.PREFIX}https://github.com/...</p>
-            <p>Example: <a href="${url.origin}${CONFIG.PREFIX}https://github.com/hunshcn/gh-proxy/blob/master/index.js">${url.origin}${CONFIG.PREFIX}https://github.com/hunshcn/gh-proxy/blob/master/index.js</a></p>
-            <p>⚡ Optimized for speed</p></body></html>`,
-            200,
-            { 'content-type': 'text/html;charset=UTF-8' }
-        )
+        return fastResponse(INDEX_HTML, 200, { 'content-type': 'text/html;charset=UTF-8' })
     }
-    
-    // 2. 处理 ?q= 参数
+
     const queryUrl = url.searchParams.get('q')
     if (queryUrl) {
         return Response.redirect(url.origin + CONFIG.PREFIX + queryUrl, 301)
     }
-    
-    // 3. 移除前缀并修复 URL
+
+    if (request.method === 'OPTIONS') {
+        return fastResponse(null, 204)
+    }
+
     let target = path.slice(CONFIG.PREFIX.length)
     if (!target.startsWith('http://') && !target.startsWith('https://')) {
         target = 'https://' + target
     }
-    
-    // 4. 路由匹配
+
     const routeType = getRouteType(target)
     if (!routeType) {
         return fastResponse('Not Found', 404)
     }
-    
-    // 5. 处理代码文件（走 jsDelivr CDN，最快）
+
     if (routeType === 'code' && CONFIG.JSDELIVR) {
-        // 替换为 jsDelivr URL（速度提升 3-5 倍）
         let cdnUrl = target
             .replace(/\/blob\//, '@')
             .replace(/^(?:https?:\/\/)?(?:github\.com|raw\.(?:githubusercontent|github)\.com)/, 'https://cdn.jsdelivr.net/gh')
             .replace(/(?<=com\/.+?\/.+?)\/(.+?\/)/, '@$1')
-        
-        // 直接 302 重定向到 jsDelivr（最快）
         return Response.redirect(cdnUrl, 302)
     }
-    
-    // 6. 处理大文件（使用流式传输 + 边缘缓存）
+
     if (routeType === 'large') {
         return await handleLargeFile(target, request)
     }
-    
-    // 7. 其他文件（直接代理）
+
     return await proxyRequest(target, request)
 }
 
-// ============ 大文件处理（流式 + 缓存） ============
+// ==================== 大文件处理 ====================
 async function handleLargeFile(url, request) {
-    // 1. 尝试从 KV 缓存获取（极速）
     if (CONFIG.ENABLE_KV_CACHE) {
-        const cacheKey = `file:${url}`
-        const cached = await GH_CACHE.get(cacheKey, 'arrayBuffer')
-        if (cached) {
-            return fastResponse(cached, 200, {
-                'content-type': 'application/octet-stream',
-                'cache-control': 'public, max-age=86400',
-                'x-cache': 'KV-HIT'
-            })
-        }
+        try {
+            const cacheKey = `file:${url}`
+            const cached = await GH_CACHE.get(cacheKey, 'arrayBuffer')
+            if (cached) {
+                return fastResponse(cached, 200, {
+                    'content-type': 'application/octet-stream',
+                    'cache-control': `public, max-age=${CONFIG.CACHE_TTL}`,
+                    'x-cache': 'HIT'
+                })
+            }
+        } catch (e) {}
     }
-    
-    // 2. 从 GitHub 获取（流式传输，不阻塞）
+
     const response = await fetch(url, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'Accept': '*/*',
-            'Accept-Encoding': 'gzip',  // 让 GitHub 返回压缩内容
-        }
+            'Accept-Encoding': 'gzip',
+            'Range': request.headers.get('range') || '',
+        },
+        cf: { http2: true }
     })
-    
+
     if (!response.ok) {
         return fastResponse('Fetch failed', response.status)
     }
-    
-    // 3. 获取内容并缓存到 KV（异步，不阻塞响应）
-    const contentType = response.headers.get('content-type') || 'application/octet-stream'
+
     const contentLength = response.headers.get('content-length')
-    
-    // 只缓存小于 10MB 的文件（太大存 KV 会超时）
-    if (CONFIG.ENABLE_KV_CACHE && contentLength && parseInt(contentLength) < 10 * 1024 * 1024) {
-        // 克隆响应以便缓存
+    const contentType = response.headers.get('content-type') || 'application/octet-stream'
+
+    if (CONFIG.ENABLE_KV_CACHE && contentLength && parseInt(contentLength) < CONFIG.MAX_CACHE_SIZE) {
         const clonedResponse = response.clone()
         const cacheKey = `file:${url}`
-        // 异步缓存（不阻塞当前响应）
         event.waitUntil(
-            clonedResponse.arrayBuffer().then(data => {
-                GH_CACHE.put(cacheKey, data, { expirationTtl: CONFIG.CACHE_TTL })
-            }).catch(() => {}) // 静默失败
+            clonedResponse.arrayBuffer()
+                .then(data => GH_CACHE.put(cacheKey, data, { expirationTtl: CONFIG.CACHE_TTL }))
+                .catch(() => {})
         )
     }
-    
-    // 4. 返回响应（流式）
+
     const headers = {
         'content-type': contentType,
         'cache-control': 'public, max-age=3600',
         'x-cache': 'MISS',
-        'accept-ranges': 'bytes',  // 支持断点续传
+        'accept-ranges': 'bytes',
     }
     if (contentLength) {
         headers['content-length'] = contentLength
     }
-    
+
     return new Response(response.body, {
         status: response.status,
         headers: { ...CORS_HEADERS, ...headers }
     })
 }
 
-// ============ 普通代理（优化连接复用） ============
+// ==================== 普通代理 ====================
 async function proxyRequest(url, request) {
     const response = await fetch(url, {
         method: request.method,
@@ -168,46 +229,39 @@ async function proxyRequest(url, request) {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'Accept': request.headers.get('accept') || '*/*',
             'Accept-Encoding': 'gzip',
-            'Range': request.headers.get('range') || '',  // 支持断点续传
+            'Range': request.headers.get('range') || '',
         },
         redirect: 'manual',
-        // 关键优化：连接复用
-        cf: {
-            // 优先选择离用户最近的节点
-            cacheTtl: 0,
-            // 启用 HTTP/2 连接复用
-            http2: true,
-        }
+        cf: { http2: true }
     })
-    
-    // 处理重定向
+
     if (response.status === 302 || response.status === 301) {
         const location = response.headers.get('location')
-        if (location && location.includes('github.com')) {
+        if (location && isGitHubUrl(location)) {
             return Response.redirect(CONFIG.PREFIX + location, response.status)
         }
-        return Response.redirect(location, response.status)
+        if (location) {
+            return Response.redirect(location, response.status)
+        }
     }
-    
-    // 构建响应头
+
     const headers = {
         'content-type': response.headers.get('content-type') || 'application/octet-stream',
         'cache-control': 'public, max-age=300',
         'accept-ranges': 'bytes',
     }
-    
     const contentLength = response.headers.get('content-length')
     if (contentLength) {
         headers['content-length'] = contentLength
     }
-    
+
     return new Response(response.body, {
         status: response.status,
         headers: { ...CORS_HEADERS, ...headers }
     })
 }
 
-// ============ 入口 ============
+// ==================== 入口 ====================
 addEventListener('fetch', event => {
     event.respondWith(handleRequest(event.request))
 })
