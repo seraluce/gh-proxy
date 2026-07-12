@@ -94,13 +94,13 @@ const INDEX_HTML = `<!DOCTYPE html>
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 32px;
+            padding: 0 20px;
         }
         @media (min-width: 1280px) {
-            .nav-container { padding: 0 48px; }
+            .nav-container { padding: 0 24px; }
         }
         @media (max-width: 640px) {
-            .nav-container { padding: 0 16px; }
+            .nav-container { padding: 0 12px; }
         }
 .nav-brand { flex:1;
     display: flex; align-items: center; gap: 10px;
@@ -124,9 +124,16 @@ const INDEX_HTML = `<!DOCTYPE html>
         #menuToggle { display: none;
     order: 4;
 }
+        .nav-actions { display: flex; align-items: center; gap: 8px;
+    order: 2;
+}
+        .nav-actions .icon-btn:last-child { margin-left: 8px; }
         @media (max-width: 640px) {
-            #menuToggle { display: flex; order: 2; }
+            #menuToggle { display: flex; order: 1; }
+            .nav-actions { order: 3; }
+            .nav-actions .icon-btn:last-child { margin-left: 12px; }
             .nav-links { display: none; order: 4; }
+            .navbar { z-index: 1001; }
             .nav-links.mobile-open {
                 display: flex;
                 flex-direction: column;
@@ -139,7 +146,7 @@ const INDEX_HTML = `<!DOCTYPE html>
                 border-radius: var(--radius);
                 border: 1px solid var(--border);
                 padding: 6px 4px;
-                z-index: 1000;
+                z-index: 1002;
                 backdrop-filter: blur(12px) saturate(180%);
                 -webkit-backdrop-filter: blur(12px) saturate(180%);
                 box-shadow: var(--shadow-lg);
@@ -177,7 +184,7 @@ const INDEX_HTML = `<!DOCTYPE html>
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
-            z-index: 999;
+            z-index: 90;
             pointer-events: auto;
         }
         .mobile-overlay.show {
@@ -428,7 +435,7 @@ const INDEX_HTML = `<!DOCTYPE html>
             display: none; position: fixed; inset: 0;
             background: color-mix(in srgb, var(--bg) 85%, transparent);
             backdrop-filter: blur(4px);
-            z-index: 999; align-items: center; justify-content: center;
+            z-index: 90; align-items: center; justify-content: center;
         }
         .drag-overlay.show { display: flex; }
         .drag-overlay-inner {
@@ -551,6 +558,13 @@ const INDEX_HTML = `<!DOCTYPE html>
     <span>GH Proxy</span>
 </a>
     <div class="nav-actions">
+        <button class="icon-btn" id="menuToggle" aria-label="切换菜单" title="菜单">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
         <button class="icon-btn" id="themeToggle" aria-label="切换主题" title="切换深色/浅色模式">
             <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
@@ -564,13 +578,6 @@ const INDEX_HTML = `<!DOCTYPE html>
             </svg>
         </button>
     </div>
-    <button class="icon-btn" id="menuToggle" aria-label="切换菜单" title="菜单">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-    </button>
     <div class="nav-menu">
         <ul class="nav-links" id="navLinks">
             <li><a href="https://github.com" target="_blank" rel="noopener">
@@ -608,9 +615,9 @@ const INDEX_HTML = `<!DOCTYPE html>
             </div>
         </div>
         <div class="input-wrapper" style="margin-bottom:12px">
-            <button class="btn btn-primary" id="goBtn" style="flex:1">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                加速打开
+            <button class="btn btn-primary" id="downloadBtn" style="flex:1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                直接下载
             </button>
         </div>
         <div class="actions">
@@ -625,12 +632,6 @@ const INDEX_HTML = `<!DOCTYPE html>
             <button class="btn" id="curlBtn" title="复制 curl 下载命令">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
                 curl
-            </button>
-        </div>
-        <div class="actions download-action">
-            <button class="btn" id="downloadBtn" title="直接打开加速链接">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                直接下载 (浏览器)
             </button>
         </div>
         <div class="hints" id="hints"></div>
@@ -742,7 +743,6 @@ const INDEX_HTML = `<!DOCTYPE html>
     // ===== DOM =====
     const $ = s => document.querySelector(s);
     const input = $('#inputUrl');
-    const goBtn = $('#goBtn');
     const wgetBtn = $('#wgetBtn');
     const curlBtn = $('#curlBtn');
     const downloadBtn = $('#downloadBtn');
@@ -866,14 +866,6 @@ const INDEX_HTML = `<!DOCTYPE html>
         setTimeout(() => input.classList.remove('error'), 1500);
     }
 
-    function handleGo() {
-        const raw = input.value.trim();
-        if (!raw) { toast('请输入 GitHub 链接', 'error'); showInputError(); return; }
-        if (!isValidGitHubUrl(raw)) { toast('请输入有效的 GitHub 链接', 'error'); showInputError(); return; }
-        const url = buildProxyUrl(raw);
-        if (url) window.open(url, '_blank');
-    }
-
     function handleWget() {
         const raw = input.value.trim();
         if (!raw || !isValidGitHubUrl(raw)) { toast('请先输入 GitHub 链接', 'error'); showInputError(); return; }
@@ -899,7 +891,7 @@ const INDEX_HTML = `<!DOCTYPE html>
 
     // ===== 事件绑定 =====
     input.addEventListener('input', updateHints);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') handleGo(); });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') handleDownload(); });
     pasteBtn.addEventListener('click', async () => {
         try {
             const text = await navigator.clipboard.readText();
@@ -913,7 +905,6 @@ const INDEX_HTML = `<!DOCTYPE html>
         }
     });
     clearBtn.addEventListener('click', () => { input.value = ''; updateHints(); input.focus(); });
-    goBtn.addEventListener('click', handleGo);
     wgetBtn.addEventListener('click', handleWget);
     curlBtn.addEventListener('click', handleCurl);
     downloadBtn.addEventListener('click', handleDownload);
