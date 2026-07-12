@@ -94,7 +94,7 @@ const INDEX_HTML = `<!DOCTYPE html>
         @media (min-width: 1280px) {
             .navbar { padding: 0 48px; }
         }
-.nav-brand {
+.nav-brand { flex:1;
     display: flex; align-items: center; gap: 10px;
     font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
     color: var(--fg); text-decoration: none;
