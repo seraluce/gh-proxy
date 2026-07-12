@@ -111,6 +111,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
         .nav-brand svg { width: 20px; height: 20px; }
         .nav-links {
             display: flex; align-items: center; gap: 8px; list-style: none; font-size: 13px;
+            margin-left: auto;
         }
         .nav-links a {
             color: var(--fg-secondary); text-decoration: none; padding: 6px 12px;
@@ -136,7 +137,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
         .icon-btn svg { width: 16px; height: 16px; }
 
         @media (max-width: 640px) {
-            .nav-links { display: none; }
+            .nav-links { display: none; margin-left: 0; }
             #menuToggle { display: flex; }
             .nav-links.mobile-open {
                 display: flex;
@@ -589,17 +590,6 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             </svg>
             <span>GH Proxy</span>
         </a>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="https://github.com" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-                GitHub
-            </a></li>
-            <li class="nav-divider"></li>
-            <li><a href="https://github.com/hunshcn/gh-proxy" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v16h16"/><polyline points="20 10 12 18 8 14"/></svg>
-                SOURCE
-            </a></li>
-        </ul>
         <div class="nav-actions">
             <button class="icon-btn" id="menuToggle" aria-label="切换菜单" title="菜单">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -621,6 +611,17 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
                 </svg>
             </button>
         </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="https://github.com" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                GitHub
+            </a></li>
+            <li class="nav-divider"></li>
+            <li><a href="https://github.com/hunshcn/gh-proxy" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v16h16"/><polyline points="20 10 12 18 8 14"/></svg>
+                SOURCE
+            </a></li>
+        </ul>
     </div>
 </nav>
 
