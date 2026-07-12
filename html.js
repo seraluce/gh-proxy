@@ -94,11 +94,11 @@ const INDEX_HTML = `<!DOCTYPE html>
         @media (min-width: 1280px) {
             .navbar { padding: 0 48px; }
         }
-        .nav-brand { flex:1;
-            display: flex; align-items: center; gap: 10px;
-            font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
-            color: var(--fg); text-decoration: none;
-        }
+.nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
+    color: var(--fg); text-decoration: none;
+}
         .nav-brand svg { width: 20px; height: 20px; }
         .nav-links {
             display: flex; align-items: center; gap: 8px; list-style: none; font-size: 13px;
