@@ -100,7 +100,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             .nav-container { padding: 0 24px; }
         }
         @media (max-width: 640px) {
-            .nav-container { padding: 0 12px; }
+            .nav-container { padding: 0; }
         }
         .nav-brand {
             display: flex; align-items: center; gap: 10px;
@@ -529,6 +529,16 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             border-radius: var(--radius);
             background: var(--bg);
             padding: 0;
+        }
+        .giscus {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--fg);
+        }
+        .giscus-frame {
+            background: transparent;
+            border: none;
         }
 
         /* ===== 响应式 ===== */
