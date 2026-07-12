@@ -100,7 +100,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             .nav-container { padding: 0 24px; }
         }
         @media (max-width: 640px) {
-            .nav-container { padding: 0; }
+            .nav-container { padding: 0 12px; }
         }
         .nav-brand {
             display: flex; align-items: center; gap: 10px;
@@ -169,11 +169,11 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             }
             .nav-links.mobile-open li {
                 width: 100%;
-                margin: 1px 0;
+                margin: 0;
             }
             .nav-links.mobile-open li a {
                 justify-content: center;
-                padding: 10px 12px;
+                padding: 8px 12px;
                 width: 100%;
                 display: flex;
                 align-items: center;
@@ -190,7 +190,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             .nav-links.mobile-open .nav-divider {
                 height: 1px;
                 background: var(--border);
-                margin: 4px 12px;
+                margin: 2px 12px;
             }
             .navbar { z-index: 1001; }
         }
