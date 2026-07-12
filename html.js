@@ -396,14 +396,14 @@ const INDEX_HTML = `<!DOCTYPE html>
             .navbar { padding: 0 24px; }
         }
         @media (max-width: 640px) {
-            .navbar { padding: 0 16px; }
+            .navbar { padding: 0 12px; }
             .nav-links { display: none; }
-            .container { padding: 24px 16px 32px; }
-            .hero h1 { font-size: 28px; }
-            .hero p { font-size: 14px; }
-            .card { padding: 16px; }
+            .container { padding: 16px 12px 24px; }
+            .hero h1 { font-size: 26px; }
+            .hero p { font-size: 13px; }
+            .card { padding: 12px; }
             .input-wrapper { flex-direction: column; }
-            .btn { width: 100%; max-width: 260px; margin: 0 auto 8px; height: 44px; font-size: 14px; }
+            .btn { width: 100%; max-width: 240px; margin: 0 auto 10px; height: 52px; font-size: 15px; }
             .actions { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
@@ -466,7 +466,7 @@ const INDEX_HTML = `<!DOCTYPE html>
             <div class="input-wrapper">
                 <input type="url" id="inputUrl" placeholder="粘贴 GitHub 链接..." autofocus spellcheck="false" autocomplete="off">
                 <button class="input-icon paste-icon" id="pasteBtn" title="粘贴链接">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/><line x1="9" y1="12" x2="18" y2="12"/><line x1="9" y1="16" x2="18" y2="16"/></svg>
                 </button>
                 <button class="input-icon clear-icon" id="clearBtn" title="清空">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
