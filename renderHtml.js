@@ -190,7 +190,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             .nav-links.mobile-open .nav-divider {
                 height: 1px;
                 background: var(--border);
-                margin: 2px 12px;
+                margin: 0;
             }
             .navbar { z-index: 1001; }
         }
