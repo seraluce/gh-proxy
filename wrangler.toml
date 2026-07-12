@@ -1,10 +1,79 @@
-name = "gh-proxy"
-main = "index.js"
-compatibility_date = "2024-01-01"
+# ============================================================
+# 项目基础信息
+# ============================================================
+name = "gh-proxy"                         # Worker 名称（必填）
+main = "index.js"                         # 入口文件（必填）
+compatibility_date = "2024-01-01"          # 运行时版本（必填）
+workers_dev = false                       # 是否使用 workers.dev 域名（false 表示绑定自定义域名）
 
+# ============================================================
+# 环境变量（可选，用于动态配置）
+# ============================================================
+[vars]
+ENVIRONMENT = "production"                 # 环境标识
+ENABLE_CACHE = "true"                      # 是否开启 KV 缓存
+CACHE_TTL = "7200"                         # 缓存时间（秒）
+JSDELIVR = "true"                          # 是否开启 jsDelivr 加速
+MAX_CACHE_SIZE = "8388608"                 # 最大缓存文件大小（8MB）
+DEBUG = "false"                            # 调试模式
+
+# ============================================================
+# KV 命名空间绑定（必填，如果使用缓存）
+# ============================================================
 kv_namespaces = [
-    { binding = "GH_CACHE", id = "b944ad81eb904723b5eb29cccdf0f15b"}
+    { 
+        binding = "GH_CACHE",              # 代码中的变量名（必须大写）
+        id = "b944ad81eb904723b5eb29cccdf0f15b"                   # 正式环境 ID（从 Dashboard 复制）
+        # preview_id = "你的预览ID"        # 预览环境 ID（可选，不写则用上面的 id）
+    }
 ]
 
-[env.production]
-vars = { ENVIRONMENT = "production" }
+# ============================================================
+# R2 存储桶绑定（可选，用于大文件持久化缓存）
+# ============================================================
+# r2_buckets = [
+#     { 
+#         binding = "FILE_BUCKET",         # 代码中的变量名
+#         bucket_name = "gh-file-cache",   # R2 存储桶名称
+#         preview_bucket_name = "gh-file-cache-preview"  # 预览环境（可选）
+#     }
+# ]
+
+# ============================================================
+# D1 数据库绑定（可选，用于结构化数据）
+# ============================================================
+# [[d1_databases]]
+# binding = "DB"                           # 代码中的变量名
+# database_name = "gh-analytics"           # 数据库名称
+# database_id = "你的D1_ID"                # 数据库 ID
+
+# ============================================================
+# 自定义域名路由（可选）
+# ============================================================
+# routes = [
+#     { pattern = "gh.yourdomain.com/*", zone_id = "你的Zone_ID" }
+# ]
+
+# ============================================================
+# 环境区分（可选，用于开发/生产隔离）
+# ============================================================
+# [env.production]
+# vars = { ENVIRONMENT = "production" }
+# kv_namespaces = [
+#     { binding = "GH_CACHE", id = "正式ID" }
+# ]
+
+# [env.preview]
+# vars = { ENVIRONMENT = "preview" }
+# kv_namespaces = [
+#     { binding = "GH_CACHE", id = "预览ID" }
+# ]
+
+# ============================================================
+# 高级设置（可选，优化性能）
+# ============================================================
+# [env.production]
+# compatibility_flags = ["streams_enable_constructors"]  # 启用新特性
+# logpush = true                          # 开启日志推送
+# usage_model = "bundled"                 # 计费模式（bundled/unbound）
+# placement = { mode = "smart" }          # 智能放置（靠近用户）
