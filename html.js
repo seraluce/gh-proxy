@@ -106,10 +106,12 @@ const INDEX_HTML = `<!DOCTYPE html>
     display: flex; align-items: center; gap: 10px;
     font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
     color: var(--fg); text-decoration: none;
+    order: 1;
 }
         .nav-brand svg { width: 20px; height: 20px; }
         .nav-links {
             display: flex; align-items: center; gap: 8px; list-style: none; font-size: 13px;
+            order: 2;
         }
         .nav-links a {
             color: var(--fg-secondary); text-decoration: none; padding: 6px 12px;
@@ -119,35 +121,42 @@ const INDEX_HTML = `<!DOCTYPE html>
         .nav-links a:hover { color: var(--fg); background: var(--accent-light); }
         .nav-links a svg { width: 14px; height: 14px; display: none; }
         /* 移动端菜单切换按钮 */
-        #menuToggle { display: none; }
+        #menuToggle { display: none;
+    order: 4;
+}
         @media (max-width: 640px) {
-            #menuToggle { display: flex; }
-            .nav-links { display: none; }
+            #menuToggle { display: flex; order: 2; }
+            .nav-links { display: none; order: 4; }
             .nav-links.mobile-open {
                 display: flex;
                 flex-direction: column;
                 background: var(--bg-secondary);
                 position: absolute;
-                top: 100%; /* 位于导航栏下方 */
+                top: 100%;
                 right: 0;
                 left: 0;
-                margin-top: 8px;
+                margin: 8px 12px 0;
                 border-radius: var(--radius);
                 border: 1px solid var(--border);
-                padding: 16px; /* 和container padding保持一致 */
+                padding: 12px 8px;
                 z-index: 1000;
+                backdrop-filter: blur(12px) saturate(180%);
+                -webkit-backdrop-filter: blur(12px) saturate(180%);
+                box-shadow: var(--shadow-lg);
             }
             .nav-links.mobile-open li {
                 width: 100%;
+                margin: 2px 0;
             }
             .nav-links.mobile-open li a {
                 justify-content: center;
-                padding: 12px 16px;
+                padding: 14px 16px;
                 width: 100%;
                 border-bottom: 1px solid rgba(0,0,0,0.05);
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 10px;
+                border-radius: 6px;
             }
             .nav-links.mobile-open li:last-child a {
                 border-bottom: none;
@@ -159,7 +168,9 @@ const INDEX_HTML = `<!DOCTYPE html>
                 margin-right: 6px;
             }
         }
-        .nav-actions { display: flex; align-items: center; gap: 8px; }
+        .nav-actions { display: flex; align-items: center; gap: 8px;
+    order: 3;
+}
         .icon-btn {
             background: transparent; border: 1px solid var(--border); border-radius: 6px;
             padding: 7px 8px; cursor: pointer; color: var(--fg-secondary);
@@ -468,17 +479,19 @@ const INDEX_HTML = `<!DOCTYPE html>
             .container { max-width: 960px; padding: 48px 24px 64px; }
             .navbar { padding: 0 24px; }
         }
-        @media (max-width: 640px) {
-            .navbar { padding: 0 12px; }
-            .nav-links { display: none; }
-            .container { padding: 16px 12px 24px; }
-            .hero h1 { font-size: 26px; }
-            .hero p { font-size: 13px; }
-            .card { padding: 12px; }
-            .input-wrapper { flex-direction: column; }
-            .btn { width: 100%; max-width: 240px; margin: 0 auto 10px; height: 52px; font-size: 15px; }
-            .actions { grid-template-columns: 1fr; }
-        }
+@media (max-width: 640px) {
+    .navbar { padding: 0 12px; }
+    .nav-links { display: none; order: 4; }
+    .container { padding: 16px 12px 24px; }
+    .hero h1 { font-size: 26px; }
+    .hero p { font-size: 13px; }
+    .card { padding: 12px; }
+    .input-wrapper { flex-direction: column; }
+    .btn { width: 100%; max-width: 240px; margin: 0 auto 10px; height: 52px; font-size: 15px; }
+    .actions { grid-template-columns: 1fr; }
+    .nav-actions { order: 2; }
+    #menuToggle { order: 3; }
+}
         @media (max-width: 480px) {
             .hero { margin-bottom: 28px; }
             .hero h1 { font-size: 24px; }
