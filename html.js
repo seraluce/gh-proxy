@@ -79,9 +79,8 @@ const INDEX_HTML = `<!DOCTYPE html>
 
         /* ===== 导航栏 ===== */
         .navbar {
-            display: flex; align-items: center; justify-content: space-between;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: flex; align-items: center;
+            width: 100%;
             height: 56px;
             border-bottom: 1px solid var(--border);
             background: color-mix(in srgb, var(--bg) 80%, transparent);
@@ -89,10 +88,19 @@ const INDEX_HTML = `<!DOCTYPE html>
             -webkit-backdrop-filter: blur(12px) saturate(180%);
             position: sticky; top: 0; z-index: 100;
             transition: background var(--transition), border-color var(--transition);
+        }
+        .nav-container {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 0 32px;
         }
         @media (min-width: 1280px) {
-            .navbar { padding: 0 48px; }
+            .nav-container { padding: 0 48px; }
+        }
+        @media (max-width: 640px) {
+            .nav-container { padding: 0 16px; }
         }
 .nav-brand { flex:1;
     display: flex; align-items: center; gap: 10px;
@@ -467,7 +475,8 @@ const INDEX_HTML = `<!DOCTYPE html>
 
 <!-- 导航栏 -->
 <nav class="navbar" role="navigation" aria-label="主导航">
-<a href="/" class="nav-brand">
+    <div class="nav-container">
+    <a href="/" class="nav-brand">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="16 18 22 12 16 6"></polyline>
         <polyline points="8 6 2 12 8 18"></polyline>
@@ -506,6 +515,7 @@ const INDEX_HTML = `<!DOCTYPE html>
                 Source
             </a></li>
         </ul>
+    </div>
     </div>
 </nav>
 
