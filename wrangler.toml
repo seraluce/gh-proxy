@@ -16,5 +16,3 @@ kv_namespaces = [
 # 可选: Workers Dev 域名
 # workers_dev = true
 
-# 日志级别
-log_level = "warn"

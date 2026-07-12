@@ -171,10 +171,10 @@ async function cfCachePut(request, response) {
 // KV 缓存 - 大文件持久化缓存
 // 优化: 先检查 Content-Length 再决定是否缓存, 避免大文件撑爆内存
 // ============================================================
-async function kvCacheGet(url) {
+async function kvCacheGet(url, env) {
     if (!CONFIG.ENABLE_KV_CACHE) return null
     try {
-        const data = await GH_CACHE.get(`file:${url}`, 'arrayBuffer')
+        const data = await env.GH_CACHE.get(`file:${url}`, 'arrayBuffer')
         if (!data) return null
         return new Response(data, {
             headers: {
@@ -186,7 +186,7 @@ async function kvCacheGet(url) {
     } catch { return null }
 }
 
-async function kvCachePut(url, response) {
+async function kvCachePut(url, response, env) {
     if (!CONFIG.ENABLE_KV_CACHE) return
     try {
         const contentLength = parseInt(response.headers.get('content-length') || '0')
@@ -195,7 +195,7 @@ async function kvCachePut(url, response) {
         // 如果没有 Content-Length, 仍需读取检查
         const data = await response.clone().arrayBuffer()
         if (data.byteLength <= CONFIG.KV_MAX_SIZE) {
-            await GH_CACHE.put(`file:${url}`, data, { expirationTtl: CONFIG.KV_CACHE_TTL })
+            await env.GH_CACHE.put(`file:${url}`, data, { expirationTtl: CONFIG.KV_CACHE_TTL })
         }
     } catch {}
 }
@@ -203,7 +203,7 @@ async function kvCachePut(url, response) {
 // ============================================================
 // 主请求处理
 // ============================================================
-async function handleRequest(request, event) {
+async function handleRequest(request, event, env) {
     const url = new URL(request.url)
     let path = url.pathname + url.search
 
@@ -255,7 +255,7 @@ async function handleRequest(request, event) {
 
     // 大文件 -> KV + Cache API 双层缓存 + 重试
     if (routeType === 'large') {
-        return await handleLargeFile(target, request, event)
+        return await handleLargeFile(target, request, event, env)
     }
 
     // git clone 等 -> 通用代理 + 重试
@@ -295,7 +295,7 @@ async function handleHealthCheck() {
 // ============================================================
 // 大文件处理 (KV + Cache API 双层缓存 + 重试 + Range 支持)
 // ============================================================
-async function handleLargeFile(url, request, event) {
+async function handleLargeFile(url, request, event, env) {
     // 1. 先查 Cloudflare Cache API (边缘节点缓存, 最快)
     const cfCached = await cfCacheGet(request)
     if (cfCached) {
@@ -305,7 +305,7 @@ async function handleLargeFile(url, request, event) {
     }
 
     // 2. 再查 Workers KV (持久缓存)
-    const kvCached = await kvCacheGet(url)
+    const kvCached = await kvCacheGet(url, env)
     if (kvCached) {
         // 异步回填 CF Cache
         event.waitUntil(cfCachePut(request, kvCached.clone()))
@@ -391,7 +391,7 @@ async function handleLargeFile(url, request, event) {
             event.waitUntil(
                 Promise.allSettled([
                     cfCachePut(request, proxyResp.clone()),
-                    kvCachePut(url, proxyResp.clone()),
+                    kvCachePut(url, proxyResp.clone(), env),
                 ])
             )
         } else {
@@ -469,6 +469,8 @@ async function proxyRequest(url, request) {
 // ============================================================
 // 入口
 // ============================================================
-addEventListener('fetch', event => {
-    event.respondWith(handleRequest(event.request, event))
-})
+export default {
+    fetch(request, env, event) {
+        return handleRequest(request, event, env)
+    }
+}
