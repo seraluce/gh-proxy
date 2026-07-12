@@ -100,18 +100,17 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             .nav-container { padding: 0 24px; }
         }
         @media (max-width: 640px) {
-            .nav-container { padding: 0; }
+            .nav-container { padding: 0 12px; }
         }
-.nav-brand { flex:1;
-    display: flex; align-items: center; gap: 10px;
-    font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
-    color: var(--fg); text-decoration: none;
-    order: 1;
-}
+        .nav-brand {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
+            color: var(--fg); text-decoration: none;
+            flex-shrink: 0;
+        }
         .nav-brand svg { width: 20px; height: 20px; }
         .nav-links {
             display: flex; align-items: center; gap: 8px; list-style: none; font-size: 13px;
-            order: 2;
         }
         .nav-links a {
             color: var(--fg-secondary); text-decoration: none; padding: 6px 12px;
@@ -119,30 +118,34 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             display: flex; align-items: center; gap: 5px;
         }
         .nav-links a:hover { color: var(--fg); background: var(--accent-light); }
-        .nav-links a svg { width: 14px; height: 14px; display: none; }
-        /* 移动端菜单切换按钮 */
-        #menuToggle { display: none;
-    order: 4;
-}
-        .nav-actions { display: flex; align-items: center; gap: 8px;
-    order: 2;
-}
-        .nav-actions .icon-btn:last-child { margin-left: 8px; }
+        .nav-links a svg { width: 14px; height: 14px; }
+        .nav-actions {
+            display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0;
+        }
+        .nav-actions .icon-btn:last-child { margin-left: 4px; }
+        #menuToggle {
+            display: none;
+        }
+        .icon-btn {
+            background: transparent; border: 1px solid var(--border); border-radius: 6px;
+            padding: 7px 8px; cursor: pointer; color: var(--fg-secondary);
+            transition: all var(--transition); display: flex; align-items: center; justify-content: center;
+        }
+        .icon-btn:hover { background: var(--bg-tertiary); color: var(--fg); border-color: var(--border-hover); }
+        .icon-btn svg { width: 16px; height: 16px; }
+
         @media (max-width: 640px) {
-            #menuToggle { display: flex; order: 1; }
-            .nav-actions { order: 3; }
-            .nav-actions .icon-btn:last-child { margin-left: 12px; }
-            .nav-links { display: none; order: 4; }
-            .navbar { z-index: 1001; }
+            .nav-links { display: none; }
+            #menuToggle { display: flex; }
             .nav-links.mobile-open {
                 display: flex;
                 flex-direction: column;
                 background: var(--bg-secondary);
                 position: absolute;
-                top: 100%;
-                right: 0;
-                left: 0;
-                margin: 4px 6px 0;
+                top: calc(100% + 4px);
+                left: 12px;
+                right: 12px;
                 border-radius: var(--radius);
                 border: 1px solid var(--border);
                 padding: 6px 4px;
@@ -176,6 +179,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
                 background: var(--border);
                 margin: 6px 12px;
             }
+            .navbar { z-index: 1001; }
         }
         .mobile-overlay {
             display: none;
@@ -190,16 +194,6 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
         .mobile-overlay.show {
             display: block;
         }
-        .nav-actions { display: flex; align-items: center; gap: 8px;
-    order: 3;
-}
-        .icon-btn {
-            background: transparent; border: 1px solid var(--border); border-radius: 6px;
-            padding: 7px 8px; cursor: pointer; color: var(--fg-secondary);
-            transition: all var(--transition); display: flex; align-items: center; justify-content: center;
-        }
-        .icon-btn:hover { background: var(--bg-tertiary); color: var(--fg); border-color: var(--border-hover); }
-        .icon-btn svg { width: 16px; height: 16px; }
 
         /* ===== 主容器 ===== */
         .container {
@@ -236,7 +230,20 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
 }
         .card:focus-within { box-shadow: var(--shadow-lg); border-color: var(--border-hover); }
 
-        /* ===== 输入区域 ===== */
+        .input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .input-row .input-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+        .input-row .btn-primary {
+            height: 44px;
+            flex-shrink: 0;
+            padding: 0 20px;
+        }
         .input-group { margin-bottom: 20px; }
         .input-wrapper {
             position: relative; display: flex; gap: 8px;
@@ -514,26 +521,41 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
             text-decoration: underline;
         }
 
+        /* ===== 评论区 ===== */
+        .giscus-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 16px 0;
+            border-radius: var(--radius);
+            background: var(--bg);
+            padding: 0;
+        }
+
         /* ===== 响应式 ===== */
         @media (max-width: 1280px) {
             .container { max-width: 960px; padding: 48px 24px 64px; }
             .navbar { padding: 0 24px; }
         }
 @media (max-width: 640px) {
-    .navbar { padding: 0 12px; }
-    .nav-links { display: none; order: 4; }
     .container { padding: 16px 12px 24px; }
     .hero h1 { font-size: 26px; }
     .hero p { font-size: 13px; }
     .card { padding: 12px; }
-    .input-wrapper { flex-direction: column; }
-    .btn { width: 100%; max-width: 240px; margin: 0 auto 10px; height: 52px; font-size: 15px; }
+    .input-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .input-row .input-wrapper {
+        width: 100%;
+    }
+    .input-row .btn-primary {
+        width: 100%;
+        height: 48px;
+        font-size: 15px;
+    }
     .actions { grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .actions .btn { width: 100%; max-width: none; margin: 0 auto; height: 40px; font-size: 12px; }
-    .download-action { grid-column: 1 / -1; }
-    .download-action .btn { width: 100%; max-width: none; height: 44px; font-size: 13px; }
-    .nav-actions { order: 2; }
-    #menuToggle { order: 3; }
+    .nav-actions { gap: 6px; }
 }
         @media (max-width: 480px) {
             .hero { margin-bottom: 28px; }
@@ -550,35 +572,13 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
 <!-- 导航栏 -->
 <nav class="navbar" role="navigation" aria-label="主导航">
     <div class="nav-container">
-    <a href="/" class="nav-brand">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="16 18 22 12 16 6"></polyline>
-        <polyline points="8 6 2 12 8 18"></polyline>
-    </svg>
-    <span>GH Proxy</span>
-</a>
-    <div class="nav-actions">
-        <button class="icon-btn" id="menuToggle" aria-label="切换菜单" title="菜单">
+        <a href="/" class="nav-brand">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
-        </button>
-        <button class="icon-btn" id="themeToggle" aria-label="切换主题" title="切换深色/浅色模式">
-            <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
-                <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/>
-                <line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-            <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-        </button>
-    </div>
-    <div class="nav-menu">
+            <span>GH Proxy</span>
+        </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="https://github.com" target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
@@ -590,7 +590,27 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
                 SOURCE
             </a></li>
         </ul>
-    </div>
+        <div class="nav-actions">
+            <button class="icon-btn" id="menuToggle" aria-label="切换菜单" title="菜单">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <button class="icon-btn" id="themeToggle" aria-label="切换主题" title="切换深色/浅色模式">
+                <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+        </div>
     </div>
 </nav>
 
@@ -603,7 +623,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
     </div>
 
     <div class="card">
-        <div class="input-group">
+        <div class="input-row">
             <div class="input-wrapper">
                 <input type="url" id="inputUrl" placeholder="粘贴 GitHub 链接..." autofocus spellcheck="false" autocomplete="off">
                 <button class="input-icon paste-icon" id="pasteBtn" title="粘贴链接">
@@ -613,9 +633,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-        </div>
-        <div class="input-wrapper" style="margin-bottom:12px">
-            <button class="btn btn-primary" id="downloadBtn" style="flex:1">
+            <button class="btn btn-primary" id="downloadBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 直接下载
             </button>
@@ -695,7 +713,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
                 </div>
             </div>
         </div>
-<div style="max-height: 400px; overflow-y: auto; margin: 16px 0;">
+<div class="giscus-container">
 <script src="https://giscus.app/client.js"
         data-repo="seraluce/gh-proxy"
         data-repo-id="R_kgDOTV_VtQ"
