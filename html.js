@@ -165,29 +165,32 @@ const INDEX_HTML = `<!DOCTYPE html>
             box-shadow: 0 0 0 3px var(--accent-light);
         }
         .input-wrapper input::placeholder { color: var(--fg-tertiary); }
-        .input-clear {
+        .input-icon {
             position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-            background: var(--bg-tertiary); border: none; border-radius: 50%;
-            width: 22px; height: 22px; cursor: pointer; display: none;
-            align-items: center; justify-content: center;
-            color: var(--fg-tertiary); font-size: 14px; line-height: 1;
-            transition: all var(--transition);
+            background: none; border: none; border-radius: 4px;
+            width: 24px; height: 24px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--fg-tertiary); transition: all var(--transition);
         }
-        .input-clear:hover { background: var(--border); color: var(--fg); }
-        .input-wrapper input:not(:placeholder-shown) + .input-clear { display: flex; }
+        .input-icon:hover { color: var(--fg); background: var(--bg-tertiary); }
+        .input-icon svg { width: 16px; height: 16px; }
+        .paste-icon { display: flex; }
+        .clear-icon { display: none; }
+        .input-wrapper input:not(:placeholder-shown) ~ .paste-icon { display: none; }
+        .input-wrapper input:not(:placeholder-shown) ~ .clear-icon { display: flex; }
 
         .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-            padding: 0 20px; height: 44px;
-            font-family: var(--font-sans); font-size: 13px; font-weight: 500;
-            border: 1px solid var(--border); border-radius: var(--radius);
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 0 16px; height: 36px;
+            font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+            border: 1px solid var(--border); border-radius: 6px;
             background: var(--bg-tertiary); color: var(--fg);
             cursor: pointer; transition: all var(--transition);
             text-decoration: none; white-space: nowrap; user-select: none;
         }
         .btn:hover { background: var(--border); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
         .btn:active { transform: translateY(0); }
-        .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
         .btn-primary {
             background: var(--accent); color: var(--accent-foreground); border-color: var(--accent);
             font-weight: 600;
@@ -197,9 +200,9 @@ const INDEX_HTML = `<!DOCTYPE html>
 
         /* ===== 下载操作组 ===== */
         .actions {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
         }
-        .actions .btn { width: 100%; font-size: 12px; padding: 0 12px; height: 40px; }
+        .actions .btn { width: 100%; font-size: 11px; padding: 0 10px; height: 34px; }
 
         /* ===== 提示区 ===== */
         .hints {
@@ -314,7 +317,7 @@ const INDEX_HTML = `<!DOCTYPE html>
             .hero p { font-size: 14px; }
             .card { padding: 20px; }
             .input-wrapper { flex-direction: column; }
-            .btn { width: 100%; height: 44px; }
+            .btn { width: 100%; height: 36px; }
             .actions { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
@@ -376,16 +379,25 @@ const INDEX_HTML = `<!DOCTYPE html>
         <div class="input-group">
             <div class="input-wrapper">
                 <input type="url" id="inputUrl" placeholder="粘贴 GitHub 链接..." autofocus spellcheck="false" autocomplete="off">
-                <button class="input-clear" id="clearBtn" aria-label="清除">&times;</button>
+                <button class="input-icon paste-icon" id="pasteBtn" title="粘贴链接">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+                <button class="input-icon clear-icon" id="clearBtn" title="清空">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
             </div>
         </div>
-        <div class="input-wrapper" style="margin-bottom:16px">
+        <div class="input-wrapper" style="margin-bottom:12px">
             <button class="btn btn-primary" id="goBtn" style="flex:1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 加速打开
             </button>
         </div>
         <div class="actions">
+            <button class="btn" id="aria2Btn" title="最快: 多线程下载命令 (推荐)" style="background:var(--accent-light);border-color:var(--accent);color:var(--accent)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                aria2 (最快)
+            </button>
             <button class="btn" id="wgetBtn" title="复制 wget 下载命令">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
                 wget
@@ -394,9 +406,11 @@ const INDEX_HTML = `<!DOCTYPE html>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
                 curl
             </button>
-            <button class="btn" id="downloadBtn" title="直接打开加速链接">
+        </div>
+        <div class="actions" style="margin-top:8px">
+            <button class="btn" id="downloadBtn" title="直接打开加速链接" style="grid-column:1/-1">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                下载
+                直接下载 (浏览器)
             </button>
         </div>
         <div class="hints" id="hints"></div>
@@ -424,6 +438,42 @@ const INDEX_HTML = `<!DOCTYPE html>
                 <span class="text">raw.githubusercontent.com/.../README.md</span>
                 <span class="example-tag">Raw → jsDelivr</span>
             </div>
+        </div>
+
+        <div class="divider">加速提示</div>
+
+        <div class="tips-section">
+            <div class="tip-item">
+                <span class="tip-icon">🚀</span>
+                <div class="tip-content">
+                    <strong>aria2 多线程下载 (推荐)</strong>
+                    <code>aria2c -x 16 -s 16 -k 1M -o 文件名 "加速链接"</code>
+                    <span class="tip-desc">16线程并行下载，速度可达单线程 10 倍以上</span>
+                </div>
+            </div>
+            <div class="tip-item">
+                <span class="tip-icon">📦</span>
+                <div class="tip-content">
+                    <strong>断点续传</strong>
+                    <code>wget -c "加速链接" 或 aria2c -c "加速链接"</code>
+                    <span class="tip-desc">网络中断后可从断点继续，无需重新下载</span>
+                </div>
+            </div>
+            <div class="tip-item">
+                <span class="tip-icon">🔗</span>
+                <div class="tip-content">
+                    <strong>URL 直接加速</strong>
+                    在任意 GitHub 链接前加上当前域名即可
+                    <span class="tip-desc">支持 Release、Archive、Raw 文件、Gist</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">GitHub 连通性</div>
+        <div class="health-section" id="healthSection">
+            <span class="health-dot" id="healthDot"></span>
+            <span class="health-text" id="healthText">检测中...</span>
+            <span class="health-latency" id="healthLatency"></span>
         </div>
     </div>
 </main>
@@ -463,6 +513,7 @@ const INDEX_HTML = `<!DOCTYPE html>
     const curlBtn = $('#curlBtn');
     const downloadBtn = $('#downloadBtn');
     const hintsEl = $('#hints');
+    const pasteBtn = $('#pasteBtn');
     const clearBtn = $('#clearBtn');
     const themeToggle = $('#themeToggle');
     const sunIcon = $('#sunIcon');
@@ -596,6 +647,18 @@ const INDEX_HTML = `<!DOCTYPE html>
     // ===== 事件绑定 =====
     input.addEventListener('input', updateHints);
     input.addEventListener('keydown', e => { if (e.key === 'Enter') handleGo(); });
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                input.value = text;
+                updateHints();
+                input.focus();
+            }
+        } catch {
+            toast('无法读取剪贴板', 'error');
+        }
+    });
     clearBtn.addEventListener('click', () => { input.value = ''; updateHints(); input.focus(); });
     goBtn.addEventListener('click', handleGo);
     wgetBtn.addEventListener('click', handleWget);
