@@ -2392,6 +2392,7 @@ anhouse.com
 anhuaedu.com
 anhuanjia.com
 anhui-expressway.net
+anhui.gov.cn
 anhui365.net
 anhuiaia.com
 anhuicta.com
@@ -5515,6 +5516,7 @@ beijing-marathon.com
 beijing-office.com
 beijing-time.org
 beijing-tokyo.com
+beijing.gov.cn
 beijing101.com
 beijing518.com
 beijingaierfei.com
@@ -10509,7 +10511,9 @@ cere.cc
 ceremony79.com
 cerestools.com
 cernet.com
+cernet.edu.cn
 cernet.net
+cernet2.edu.cn
 cernet2.net
 cersign.com
 cersp.com
@@ -12813,6 +12817,7 @@ chongjiyashiji.com
 chongkongwang999.com
 chongmingzhuce.com
 chongnengjihua.com
+chongqing.gov.cn
 chongqingdongjin.com
 chongqingrenpin.com
 chongqingyoupin.com
@@ -22451,6 +22456,7 @@ edty.com
 edu-cj.com
 edu-edu.com
 edu-nw.com
+edu.cn
 edu03.com
 edu1488.com
 edu24o1.com
@@ -22471,6 +22477,7 @@ eduardoam.com
 eduartisan.com
 educg.net
 educhn.net
+educn.edu.cn
 educoder.net
 edudc.net
 edudigital123.com
@@ -26467,6 +26474,7 @@ fuiou.com
 fuioupay.com
 fujfu.com
 fujiabin.com
+fujian.gov.cn
 fujianbenz.com
 fujiangames.com
 fujianrc.com
@@ -27250,6 +27258,7 @@ ganqi.net
 ganqing10.com
 ganrobot.com
 ganso.net
+gansu.gov.cn
 gansuairport.com
 gansumuseum.com
 gansuyouxi.com
@@ -28769,6 +28778,7 @@ gjxzq.com
 gjydz.com
 gjyuxiang.com
 gjyys.com
+gjzwfw.www.gov.cn
 gjzy.com
 gk-cn.com
 gk-net.com
@@ -29662,6 +29672,7 @@ gouwuke.com
 gouwuyu.com
 gouyoukeji.com
 gov-static.tech
+gov.cn
 govagroup.com
 govfz.com
 govisionox.net
@@ -30234,6 +30245,7 @@ guangdamr.com
 guangdianyun.tv
 guangdiu.com
 guangdong-hotel.com
+guangdong.gov.cn
 guangdong1039.com
 guangdonggames.com
 guangdonglianxing.com
@@ -30285,6 +30297,7 @@ guanguigroup.com
 guanguser.com
 guangwaifu.com
 guangwei.com
+guangxi.gov.cn
 guangxibiaoxie.com
 guangxicarbon.com
 guangxichunhui.com
@@ -30501,6 +30514,7 @@ guiyuntai.com
 guizeco.com
 guizheng.net
 guizhenghe.com
+guizhou.gov.cn
 guizhougames.com
 guizhougas.com
 guizhoushengyang.com
@@ -30816,6 +30830,7 @@ gwtt.com
 gwwg.com
 gwxeda.com
 gwy.com
+gwy.www.gov.cn
 gwyclass.com
 gwyoo.com
 gwyou.com
@@ -33552,6 +33567,7 @@ haimosic.com
 haina.com
 haina.net
 hainajc.com
+hainan.gov.cn
 hainan.net
 hainan0898.net
 hainanairlines.com
@@ -35085,6 +35101,7 @@ hebcar.com
 hebecc.com
 hebeeb.com
 hebei.cm
+hebei.gov.cn
 hebeieb.com
 hebeifanlin.com
 hebeifc.com
@@ -35225,6 +35242,7 @@ heike07.com
 heilanhome.com
 heilei.com
 heilifun.com
+heilongjiang.gov.cn
 heilongjianggames.com
 heiluo.com
 heima010.com
@@ -35372,6 +35390,7 @@ hempelgroup.com
 hen360.com
 henai.com
 henaiwan.com
+henan.gov.cn
 henan100.com
 henanart.com
 henanbojin.com
@@ -38542,6 +38561,7 @@ huazirc.com
 hubamdi.com
 hubashihuo.com
 hubcyts.com
+hubei.gov.cn
 hubei88.com
 hubeiamc.com
 hubeibbs.net
@@ -38942,6 +38962,7 @@ hummcars.com
 hunaen.com
 hunan-changda.com
 hunan-huasheng.com
+hunan.gov.cn
 hunan100km.com
 hunanbestall.com
 hunancatv.com
@@ -43980,6 +44001,7 @@ jiangshankeji.com
 jiangshanlihong.com
 jiangshi.org
 jiangshi99.com
+jiangsu.gov.cn
 jiangsudanzhao.com
 jiangsuedu.net
 jiangsufilm.com
@@ -43997,6 +44019,7 @@ jiangtuoedu.com
 jianguo.tv
 jianguoyun.com
 jiangweishan.com
+jiangxi.gov.cn
 jiangxiatech.com
 jiangxinkeji.club
 jiangxiol.com
@@ -44473,6 +44496,7 @@ jilailawyer.com
 jilaoshi.com
 jili20.com
 jiliguala.com
+jilin.gov.cn
 jilingames.com
 jilinmarathon.com
 jilinshuiwu.com
@@ -51585,6 +51609,7 @@ liaoing.com
 liaojiu.net
 liaokong.com
 liaoliao.com
+liaoning.gov.cn
 liaoningmoduo.com
 liaoningpharm.com
 liaosam.com
@@ -58954,6 +58979,7 @@ neihanfly.com
 neihang.net
 neihanshequ.com
 neimaowang.com
+neimenggu.gov.cn
 neimenggugames.com
 neisha.cc
 neitui.com
@@ -59531,6 +59557,7 @@ ningtingche.com
 ningto.com
 nington.com
 ningxi.com
+ningxia.gov.cn
 ningxiacaijing.com
 ningxiagames.com
 ningxiahuangheyun.com
@@ -65606,6 +65633,7 @@ qingge666.com
 qinggl.com
 qinggonggroup.com
 qingguo.com
+qinghai.gov.cn
 qinghaigames.com
 qinghaihuaer.com
 qinghe-sh.com
@@ -71193,6 +71221,7 @@ sha2777.com
 sha990.com
 shaaidata.com
 shaangu.com
+shaanxi.gov.cn
 shaanxigas.com
 shaanxiiot.com
 shaanxirk.com
@@ -71250,6 +71279,7 @@ shandiansiwei.com
 shandingdang.com
 shandingmenye.com
 shandong-energy.com
+shandong.gov.cn
 shandongair.com
 shandongbadun.com
 shandonggangxie.com
@@ -71314,6 +71344,7 @@ shanghai-parking.com
 shanghai-pictures.com
 shanghai-sports.com
 shanghai-test.com
+shanghai.gov.cn
 shanghaiahte.com
 shanghaiairport.com
 shanghaiairporttour.com
@@ -71495,6 +71526,7 @@ shanweinews.net
 shanweirc.com
 shanweiyule.com
 shanwel.com
+shanxi.gov.cn
 shanxiangjiaoyu.com
 shanxiaobai.com
 shanxichess.com
@@ -73317,6 +73349,7 @@ sicc.cc
 sicent.com
 sicheng.net
 sicher-elevator.com
+sichuan.gov.cn
 sichuan163.com
 sichuanair.com
 sichuanbh.com
@@ -77232,6 +77265,7 @@ szftzy.com
 szfutong.com
 szfuture.com
 szfw.org
+szfw.www.gov.cn
 szfx.com
 szfxdev.com
 szfyhd.com
@@ -79643,6 +79677,7 @@ tianjin-air.com
 tianjin-iwc.com
 tianjin-marathon.com
 tianjin-patek.com
+tianjin.gov.cn
 tianjinbohaileasing.com
 tianjingames.com
 tianjinwe.com
@@ -88237,9 +88272,16 @@ www.amd.com
 www.apple.com
 www.apple.com.edgekey.net.globalredir.akadns.net
 www.bing.com
+www.caac.gov.cn
+www.cac.gov.cn
+www.cbirc.gov.cn
 www.cdnetworks.com
+www.cert.org.cn
 www.cg
+www.cma.gov.cn
 www.com.my
+www.csrc.gov.cn
+www.customs.gov.cn
 www.dell-brand.com
 www.dell.com
 www.destinationurl.com
@@ -88248,20 +88290,40 @@ www.djivideos.com
 www.entrust.cn
 www.epsonconnect.com
 www.globalsign.com
+www.gov.cn
 www.gov.mo
 www.gstatic.com
 www.htc.com
+www.isc.org.cn
 www.lenovo.net
 www.linkedin.com
+www.mca.gov.cn
+www.mee.gov.cn
+www.miit.gov.cn
+www.mnr.gov.cn
+www.moa.gov.cn
+www.moe.gov.cn
+www.mofcom.gov.cn
+www.moh.gov.cn
+www.mohrss.gov.cn
+www.moj.gov.cn
+www.mps.gov.cn
+www.nea.gov.cn
 www.netarch.akamai.com
 www.nike.com
 www.nocc.akamai.com
+www.obs.cn
+www.pbc.gov.cn
 www.pxcc.com
 www.recaptcha-cn.net
 www.recaptcha.net
 www.redhat.com
+www.safe.gov.cn
+www.samr.gov.cn
+www.sasac.gov.cn
 www.skypixel.com
 www.st.com
+www.stats.gov.cn
 www.support.apple.com
 www.vive.com
 www.viveport.com
@@ -90625,6 +90687,7 @@ xiniushu.com
 xiniuyun.com
 xiniuz.com
 xinjiadiy.com
+xinjiang.gov.cn
 xinjianggames.com
 xinjianggou.com
 xinjiashangtou.com
@@ -91073,6 +91136,7 @@ xiyuege.com
 xiyuegr.com
 xiyufine.com
 xiyun.net
+xizang.gov.cn
 xizanggames.com
 xizangguolv.net
 xizangmaoniunai.com
@@ -97064,6 +97128,7 @@ yunmoseo.com
 yunmoxing.com
 yunn-tech.com
 yunna.me
+yunnan.gov.cn
 yunnan.vip
 yunnancoffee.org
 yunnandns.com
@@ -99136,6 +99201,7 @@ zhedu.net
 zhefengle.com
 zhegu8.xyz
 zheiyu.com
+zhejiang.gov.cn
 zhejiangcircuit.com
 zhejiangfa.com
 zhejiangfc1998.com
