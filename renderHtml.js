@@ -815,7 +815,7 @@ const TEMPLATE_HTML = `<!DOCTYPE html>
     const mobileOverlay = $('#mobileOverlay');
 
     // ===== 工具函数 =====
-    function getBaseUrl() { return location.origin + '/'; }
+    function getBaseUrl() { return location.origin + '/gh/'; }
 
     function buildProxyUrl(raw) {
         raw = raw.trim();
