@@ -13,7 +13,7 @@ import TEMPLATE_HTML from './renderHtml.js';
 'use strict';
 
 const CONFIG = {
-    PREFIX: '/',
+    PREFIX: '/gh/',
     JSDELIVR: 1,
     // KV 缓存 (大文件持久缓存)
     ENABLE_KV_CACHE: true,
