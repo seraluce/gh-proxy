@@ -1,12 +1,11 @@
 {
-  "name": "gh-proxy",
-  "version": "2.0.0",
-  "description": "GitHub Release、Archive 及项目文件的加速项目，基于 Cloudflare Workers",
+  "name": "proxy-hub",
+  "version": "1.0.0",
+  "description": "Cloudflare Workers 代理工具集",
   "private": true,
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "tail": "wrangler tail"
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"
