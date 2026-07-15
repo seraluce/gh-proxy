@@ -68,7 +68,7 @@ jobs:
               pos = 0
               while pos < len(data):
                   fn, wt, val, pos = decode_field(data, pos)
-                  if fn == 1 and wt == 2:
+                  if fn == 2 and wt == 2:
                       entries.append(decode_string(val))
               return entries
 
