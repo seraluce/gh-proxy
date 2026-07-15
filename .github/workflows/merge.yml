@@ -19,8 +19,8 @@ jobs:
 
       - name: 下载并完整解析 geosite.dat
         run: |
-          echo "📥 下载 Loyalsoldier 规则集..."
-          curl -sSL --connect-timeout 15 --max-time 120 -o geosite.dat https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat || {
+          echo "📥 下载 v2fly geosite.dat..."
+          curl -sSL --connect-timeout 15 --max-time 120 -o geosite.dat https://github.com/v2fly/domain-list-community/releases/latest/download/geosite.dat || {
             echo "❌ 下载 geosite.dat 失败"
             exit 1
           }
@@ -68,7 +68,7 @@ jobs:
               pos = 0
               while pos < len(data):
                   fn, wt, val, pos = decode_field(data, pos)
-                  if fn == 2 and wt == 2:
+                  if fn == 1 and wt == 2:
                       entries.append(decode_string(val))
               return entries
 
