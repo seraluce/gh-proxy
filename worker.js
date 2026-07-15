@@ -476,7 +476,7 @@ async function proxyRequest(url, request) {
 // 直连规则订阅
 // ============================================================
 const PROXY_RULE_CONFIG = {
-    GITHUB_RAW_BASE: 'https://raw.githubusercontent.com/seraluce/proxy-rule/main',
+    GITHUB_RAW_BASE: 'https://raw.githubusercontent.com/seraluce/proxy-hub/main',
     CACHE_TTL: 86400,
 };
 
