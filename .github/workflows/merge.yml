@@ -226,6 +226,46 @@ jobs:
           } > direct_clash.yaml
           echo "✅ Clash 格式已生成"
 
+      - name: 生成 Surge 格式
+        run: |
+          {
+            echo "# Surge 直连规则"
+            echo "# 生成时间: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            if [ -s direct.txt ]; then
+              cat direct.txt | head -n 50000 | sed 's/^/DOMAIN-SUFFIX,/' | sed 's/$/,DIRECT/'
+            else
+              echo "DOMAIN-SUFFIX,example.com,DIRECT"
+            fi
+          } > direct_surge.txt
+          echo "✅ Surge 格式已生成"
+
+      - name: 生成 Shadowrocket 格式
+        run: |
+          {
+            echo "# Shadowrocket 直连规则"
+            echo "# 生成时间: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            if [ -s direct.txt ]; then
+              cat direct.txt | head -n 50000 | sed 's/^/DOMAIN-SUFFIX,/' | sed 's/$/,DIRECT/'
+            else
+              echo "DOMAIN-SUFFIX,example.com,DIRECT"
+            fi
+          } > direct_shadowrocket.conf
+          echo "✅ Shadowrocket 格式已生成"
+
+      - name: 生成 V2Ray 格式
+        run: |
+          {
+            echo "# V2Ray 直连规则"
+            echo "# 生成时间: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo "# 格式: domain:'.domain.com' (匹配所有子域名)"
+            if [ -s direct.txt ]; then
+              cat direct.txt | head -n 50000 | sed "s/^/domain:'./" | sed "s/$/'/"
+            else
+              echo "domain:'.example.com'"
+            fi
+          } > direct_v2ray.txt
+          echo "✅ V2Ray 格式已生成"
+
       - name: 验证输出文件
         run: |
           echo "🔍 验证输出文件..."
@@ -263,7 +303,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git pull --rebase || echo "没有可拉取的更新"
-          git add direct.txt direct_clash.yaml 2>/dev/null || true
+          git add direct.txt direct_clash.yaml direct_surge.txt direct_shadowrocket.conf direct_v2ray.txt 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "ℹ️ 没有新规则，跳过提交"
             exit 0
