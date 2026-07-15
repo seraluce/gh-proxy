@@ -2,6 +2,74 @@
 # 每行一个域名，# 开头为注释
 # 这些域名会被合并到最终的直连规则中
 
-# 示例：
-# example.com
-# test.example.org
+# 中国政府域名
+gov.cn
+beijing.gov.cn
+shanghai.gov.cn
+guangdong.gov.cn
+zhejiang.gov.cn
+jiangsu.gov.cn
+sichuan.gov.cn
+hubei.gov.cn
+hunan.gov.cn
+fujian.gov.cn
+shandong.gov.cn
+henan.gov.cn
+hebei.gov.cn
+anhui.gov.cn
+yunnan.gov.cn
+guizhou.gov.cn
+shaanxi.gov.cn
+gansu.gov.cn
+liaoning.gov.cn
+jilin.gov.cn
+heilongjiang.gov.cn
+hainan.gov.cn
+shanxi.gov.cn
+jiangxi.gov.cn
+tianjin.gov.cn
+chongqing.gov.cn
+xizang.gov.cn
+ningxia.gov.cn
+xinjiang.gov.cn
+neimenggu.gov.cn
+guangxi.gov.cn
+qinghai.gov.cn
+
+# 中央政府
+www.gov.cn
+gjzwfw.www.gov.cn
+szfw.www.gov.cn
+gwy.www.gov.cn
+www.moe.gov.cn
+www.miit.gov.cn
+www.mofcom.gov.cn
+www.mps.gov.cn
+www.moj.gov.cn
+www.mca.gov.cn
+www.mohrss.gov.cn
+www.moh.gov.cn
+www.moa.gov.cn
+www.mee.gov.cn
+www.mnr.gov.cn
+www.samr.gov.cn
+www.cac.gov.cn
+www.caac.gov.cn
+www.customs.gov.cn
+www.safe.gov.cn
+www.pbc.gov.cn
+www.csrc.gov.cn
+www.cbirc.gov.cn
+www.stats.gov.cn
+www.cma.gov.cn
+www.nea.gov.cn
+www.sasac.gov.cn
+www.obs.cn
+www.isc.org.cn
+www.cert.org.cn
+
+# 中国教育域名
+edu.cn
+cernet.edu.cn
+cernet2.edu.cn
+educn.edu.cn
